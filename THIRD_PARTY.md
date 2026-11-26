@@ -10,3 +10,5 @@ New code in this project is GPL-3.0-only. The bundled LICENSE retains the upstre
 
 
 - DejaVu Sans Mono: bundled for code rendering under the Bitstream Vera font license; see `fonts/DejaVu-LICENSE.txt`.
+
+- The legacy `tablet/icons/chatgpt.svg` asset is the OpenAI knot icon from Simple Icons 11.15.0, CC0-1.0: https://github.com/simple-icons/simple-icons/tree/11.15.0 . Brand trademarks remain with their owners.
