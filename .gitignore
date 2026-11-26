@@ -1,0 +1,15 @@
+node_modules/
+dist/
+release/
+.payload-build/
+*.log
+.DS_Store
+tablet/build/
+tablet/build-host/
+tablet/*-preview.png
+tablet/*-debug.png
+tablet/xovi.cpp
+tablet/xovi.h
+.env*
+*private*
+*known_hosts*

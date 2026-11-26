@@ -1,0 +1,8 @@
+FROM ubuntu:24.04
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential python3 file xz-utils zstd ca-certificates locales \
+    pkg-config qt6-base-dev qt6-declarative-dev qt6-svg-dev \
+    && locale-gen en_US.UTF-8 && rm -rf /var/lib/apt/lists/*
+ENV LANG=en_US.UTF-8
+WORKDIR /workspace/paper-pro-chatgpt

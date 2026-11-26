@@ -1,0 +1,12 @@
+[
+  {
+    "name": "xovi-aarch64.tar.gz",
+    "url": "https://github.com/asivery/rm-xovi-extensions/releases/download/v19-23052026/xovi-aarch64.tar.gz",
+    "sha256": "32d64d1262ddc984e3235c7d0340a398fe6d5b3efa6a979865f5977b32630d27"
+  },
+  {
+    "name": "rm-shot-aarch64.so",
+    "url": "https://github.com/rmitchellscott/rm-shot/releases/download/v1.2.0/rm-shot-aarch64.so",
+    "sha256": "1526fb4a0582c26801afc2861eeafd651286ef0f23bbdb372700dd025f66f786"
+  }
+]

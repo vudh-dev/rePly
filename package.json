@@ -1,0 +1,20 @@
+{
+  "name": "reply",
+  "productName": "rePly",
+  "version": "0.1.0-beta.1",
+  "description": "A notebook that writes back. USB setup for reMarkable Paper Pro.",
+  "main": "app/main.cjs",
+  "license": "GPL-3.0-only",
+  "scripts": {
+    "start": "electron .",
+    "test": "node --test tests/*.test.cjs",
+    "package": "node scripts/package.cjs"
+  },
+  "dependencies": {
+    "ssh2": "^1.17.0"
+  },
+  "devDependencies": {
+    "electron": "45.5.0",
+    "@electron/packager": "20.3.0"
+  }
+}

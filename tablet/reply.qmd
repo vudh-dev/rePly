@@ -1,0 +1,129 @@
+; Paper Pro 3.29 toolbar integration. Two native toolbar slots, hidden by its own toggle.
+AFFECT /qt/qml/xofm/libs/toolbar/qml/Toolbar.qml
+    IMPORT net.asivery.XoviMessageBroker 2.0
+    TRAVERSE FocusScope#root
+        REPLACE showableToolsCount WITH {
+            readonly property int showableToolsCount: Math.max(0, Math.floor(Math.max(innerWidth, innerHeight) / ArkTokens.Style.variable.controlsHeight.large) - 3)
+        }
+        LOCATE AFTER ALL
+        INSERT {
+            XoviMessageBroker { id: replyBroker }
+
+
+            QtObject {
+                id: replyState
+                property bool busy: false
+                property bool autoSend: false
+                property bool monitorReady: false
+                property bool failed: false
+                property string message: "ChatGPT"
+            }
+            Timer {
+                interval: 500
+                repeat: true
+                running: root.visible
+                onTriggered: {
+                    try {
+                        var result = JSON.parse(replyBroker.sendSimpleSignal("reply$status", ""));
+                        var completed = replyState.busy && !result.busy;
+                        replyState.busy = result.busy;
+                        replyState.message = result.message;
+                        replyState.autoSend = result.autoSend;
+                        replyState.monitorReady = result.monitorReady;
+                        if (result.busy) replyState.failed = false;
+                        if (completed) {
+                            var quiet = /^(Writing continued|Cancelled|Canceled|Page changed|Answer written|Answer added|Web answer|Grayscale image added|Diagram added|Plot added)/i.test(result.message);
+                            replyState.failed = !quiet;
+                        }
+                    } catch (error) {
+                        replyState.busy = false;
+                        replyState.message = "Ink Diary extension unavailable";
+                        replyState.failed = true;
+                    }
+                }
+            }
+
+        }
+        TRAVERSE Item#toolbar > GridLayout#toolLayout
+            LOCATE BEFORE Repeater#secondaryTools
+            INSERT {
+                ArkControls.ToolButton {
+                    id: replyAutoButton
+                    objectName: "reply-auto-button"
+                    visible: root.expanded
+                    focusPolicy: Qt.NoFocus
+                    background: Rectangle { color: replyState.autoSend ? "black" : "white" }
+                    contentItem: Item {
+                        Image {
+                            anchors.centerIn: parent
+                            width: 44
+                            height: 44
+                            source: replyState.autoSend ? "file:///home/root/.config/reply/detect-active.svg" : "file:///home/root/.config/reply/detect.svg"
+                            sourceSize.width: 44
+                            sourceSize.height: 44
+                            opacity: replyState.monitorReady ? 1 : 0.4
+                        }
+                    }
+                    onClicked: {
+                        var result = JSON.parse(replyBroker.sendSimpleSignal("reply$auto", ""));
+                        replyState.autoSend = result.autoSend;
+                    }
+                    PenInputBlocker { anchors.fill: parent; enabled: true; manager: root.penInput.surfaceManager }
+                }
+                ArkControls.ToolButton {
+                    id: replyAnswerButton
+                    objectName: "reply-answer-button"
+                    visible: root.expanded
+                    focusPolicy: Qt.NoFocus
+                    background: Item {}
+                    contentItem: Item {
+                        Image {
+                            anchors.centerIn: parent
+                            width: 44
+                            height: 44
+                            source: "file:///home/root/.config/reply/wand.svg"
+                            sourceSize.width: 44
+                            sourceSize.height: 44
+                            visible: !replyState.busy
+                        }
+                        Rectangle {
+                            anchors.centerIn: parent
+                            width: 28
+                            height: 28
+                            color: "black"
+                            visible: replyState.busy
+                        }
+                        // A failed request is indicated in the control itself;
+                        // never cover notebook content with technical messages.
+                        Rectangle {
+                            anchors.right: parent.right
+                            anchors.bottom: parent.bottom
+                            width: 18
+                            height: 18
+                            radius: 9
+                            color: "black"
+                            visible: replyState.failed && !replyState.busy
+                            Text {
+                                anchors.centerIn: parent
+                                text: "!"
+                                color: "white"
+                                font.pixelSize: 14
+                                font.bold: true
+                            }
+                        }
+                    }
+                    onClicked: {
+                        replyState.failed = false;
+                        if (replyState.busy) {
+                            replyBroker.sendSimpleSignal("reply$cancel", "");
+                        } else {
+                            replyState.busy = true;
+                            replyBroker.sendSimpleSignal("reply$start", "");
+                        }
+                    }
+                    PenInputBlocker { anchors.fill: parent; enabled: true; manager: root.penInput.surfaceManager }
+                }
+            }
+        END TRAVERSE
+    END TRAVERSE
+END AFFECT

@@ -1,0 +1,35 @@
+version 0.1.0
+
+depends-on xovi-message-broker:0.2.0
+depends-on rm-shot:1.2.0
+depends-on framebuffer-spy:0.2.0
+import? framebuffer-spy$getFramebufferConfig
+import? framebuffer-spy$refreshFramebuffer
+import? rm-shot$screenshotHandler:char*>char*
+
+export diary_start
+with
+    xovi-message-broker$simpleSignal = "reply$start"
+    xovi-message-broker$version = 1
+end
+export diary_status
+with
+    xovi-message-broker$simpleSignal = "reply$status"
+    xovi-message-broker$version = 1
+end
+export diary_cancel
+with
+    xovi-message-broker$simpleSignal = "reply$cancel"
+    xovi-message-broker$version = 1
+end
+export diary_probe
+with
+    xovi-message-broker$simpleSignal = "reply$probe"
+    xovi-message-broker$version = 1
+end
+
+export diary_auto
+with
+    xovi-message-broker$simpleSignal = "reply$auto"
+    xovi-message-broker$version = 1
+end
