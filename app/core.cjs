@@ -84,12 +84,15 @@ class Tablet {
   async install(config,replaceLegacy=false) {
     config=validateConfig(config);if(!this.device)throw Error('Connect first.');
     if(this.device.legacy&&!replaceLegacy)throw Error('An existing Ink Diary installation was detected. Confirm switching to the isolated public runtime. Your existing installation stays in place.');
+    const guard=path.join(this.resources,'check-tablet-runtime.sh');
+    await this.exec('sh -s',await fs.readFile(guard));
     this.progress('Downloading and checking dependencies…');
     const downloads=[];for(const asset of manifest)downloads.push(await this.dependency(asset));
     await this.exec('umask 077; mkdir -p /home/root/reply-setup');
     for(const f of downloads)await this.put(f,'/home/root/reply-setup/'+path.basename(f));
     await this.put(path.join(this.resources,'tablet-payload.tar.gz'),'/home/root/reply-setup/tablet-payload.tar.gz');
     await this.put(path.join(this.resources,'install-tablet.sh'),'/home/root/reply-setup/install-tablet.sh');
+    await this.exec('umask 077; cat > /home/root/reply-setup/check-tablet-runtime.sh',await fs.readFile(guard));
     this.progress('Installing tablet files; preserving existing settings…');
     await this.exec(`sh /home/root/reply-setup/install-tablet.sh ${replaceLegacy?'replace-legacy':'fresh'}`,undefined,60000);
     await this.configure(config);
@@ -110,7 +113,10 @@ class Tablet {
     await this.exec('set -e; umask 077; mkdir -p /home/root/.config/reply; cat > /home/root/.config/reply/config.json.new; chmod 600 /home/root/.config/reply/config.json.new; mv /home/root/.config/reply/config.json.new /home/root/.config/reply/config.json',JSON.stringify(config));
     return {ok:true};
   }
-  async start(){await this.exec('sh /home/root/.local/share/reply/start.sh');return {ok:true};}
+  async start(){
+    await this.exec('sh -s',await fs.readFile(path.join(this.resources,'check-tablet-runtime.sh')));
+    await this.exec('sh /home/root/.local/share/reply/start.sh');return {ok:true};
+  }
   async stop(){await this.exec('sh /home/root/.local/share/reply/stop.sh');return {ok:true};}
   async status(){return this.exec('timeout 5 sh -c \'cat /run/xovi-mb-out & reader=$!; printf "%s\\n" ">reply\\$status:" > /run/xovi-mb; wait "$reader"\' || true').then(text => text.trim() || 'No plugin response. Unlock and open a notebook, or click Start.').catch(()=> 'No plugin response. Unlock and open a notebook, or click Start.');}
 }

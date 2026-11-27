@@ -12,7 +12,7 @@ When SSH works, the app's **Return to previous setup** button removes its tempor
 sh /home/root/.local/share/reply/stop.sh
 ```
 
-Installation lives under `/home/root/reply-runtime`; settings under `/home/root/.config/reply`; state under `/home/root/.local/share/reply`. Existing private Ink Diary/XOVI installations are left in place and temporarily superseded. A failed resource rebuild restores the normal system service. Keep USB attached and the tablet unlocked during indexing.
+Installation lives under `/home/root/reply-runtime`; settings under `/home/root/.config/reply`; state under `/home/root/.local/share/reply`. The standalone installer refuses to replace another active XOVI setup or preload policy. It is not an installer for an existing XOVI stack. A failed resource rebuild restores the normal system service. Keep USB attached and the tablet unlocked during indexing.
 
 To uninstall, first return to the previous setup. Then remove only the rePly directories listed above, plus `/home/root/reply-setup` and `/home/root/reply-hash-runtime`. This removes saved API credentials and app history; it does not remove answer strokes already in notebooks. Do not remove a shared `/home/root/xovi` installation.
 
