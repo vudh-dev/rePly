@@ -1,6 +1,7 @@
 #!/bin/sh
 set -eu
 state=/home/root/.local/share/reply
+sh "$state/check-tablet-runtime.sh"
 runtime=/home/root/reply-runtime
 hashroot=/home/root/reply-hash-runtime
 rm -f "$state/rebuild.ok" "$state/rebuild.failed"

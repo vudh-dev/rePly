@@ -4,10 +4,7 @@ umask 077
 stage=/home/root/reply-setup
 runtime=/home/root/reply-runtime
 state=/home/root/.local/share/reply
-. /etc/os-release
-case "$IMG_VERSION" in 3.29.0.153|3.29.1.0) ;; *) echo 'Unsupported firmware' >&2; exit 1;; esac
-[ "$(uname -m)" = aarch64 ] || exit 1
-grep -q 'reMarkable Ferrari' /sys/firmware/devicetree/base/model || exit 1
+sh "$stage/check-tablet-runtime.sh"
 # Runtime is isolated from any existing XOVI / Ink Diary installation.
 mkdir -p "$state" "$runtime" "$stage/unpack"
 if [ -d /home/root/.config/reply ]; then
@@ -34,4 +31,5 @@ cp "$stage/unpack/payload/"*.svg /home/root/.config/reply/
 # Any previous capture proof belongs to an earlier firmware/session.
 rm -f /home/root/.config/reply/fast-capture-verified
 cp "$stage/unpack/payload/"*.sh "$state/"
+cp "$stage/check-tablet-runtime.sh" "$state/check-tablet-runtime.sh"
 chmod 700 "$state/"*.sh

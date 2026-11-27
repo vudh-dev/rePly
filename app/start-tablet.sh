@@ -1,5 +1,6 @@
 #!/bin/sh
 set -eu
+sh /home/root/.local/share/reply/check-tablet-runtime.sh
 runtime=/home/root/reply-runtime
 [ -s "$runtime/exthome/qt-resource-rebuilder/hashtab" ] || { echo 'Complete installation first'; exit 1; }
 mkdir -p /run/systemd/system/xochitl.service.d
